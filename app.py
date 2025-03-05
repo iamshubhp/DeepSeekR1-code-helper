@@ -8,7 +8,7 @@ from langchain_core.prompts import (
     ChatPromptTemplate
 )
 
-# Advanced Professional UI CSS
+# CSS
 st.markdown("""
 <style>
     /* Dark Mode Professional Theme */
@@ -122,7 +122,7 @@ st.markdown("""
 st.title("DeepSeek - Code Helper")
 st.caption("Your AI Pair Programmer with Debugging Superpowers")
 
-# Sidebar configuration
+
 with st.sidebar:
     st.header("Configuration")
     selected_model = st.selectbox(
@@ -153,27 +153,27 @@ llm_engine = ChatOllama(
 
 )
 
-# System prompt configuration
+
 system_prompt = SystemMessagePromptTemplate.from_template(
     "You are an expert AI coding assistant. Provide concise, correct solutions "
     "with strategic print statements for debugging. Always respond in English."
 )
 
-# Session state management
+
 if "message_log" not in st.session_state:
     st.session_state.message_log = [
         {"role": "ai", "content": "Hi! I'm DeepSeek. How can I help you code today? 💻"}]
 
-# Chat container
+
 chat_container = st.container()
 
-# Display chat messages
+
 with chat_container:
     for message in st.session_state.message_log:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-# Chat input and processing
+
 user_query = st.chat_input("Type your coding question here...")
 
 
@@ -195,7 +195,7 @@ def build_prompt_chain():
 
 
 if user_query:
-    # Add user message to log
+
     st.session_state.message_log.append(
         {"role": "user", "content": user_query})
 
@@ -204,8 +204,6 @@ if user_query:
         prompt_chain = build_prompt_chain()
         ai_response = generate_ai_response(prompt_chain)
 
-    # Add AI response to log
     st.session_state.message_log.append({"role": "ai", "content": ai_response})
 
-    # Rerun to update chat display
     st.rerun()
