@@ -1,120 +1,146 @@
 import streamlit as st
 from langchain_ollama import ChatOllama
 from langchain_core.output_parsers import StrOutputParser
-
 from langchain_core.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
     AIMessagePromptTemplate,
     ChatPromptTemplate
 )
-# Custom CSS styling
+
+# Advanced Professional UI CSS
 st.markdown("""
 <style>
-    /* Enhanced dark theme with better visual hierarchy */
-    .main {
-        background-color: #0F1117;
-        color: #E2E8F0;
+    /* Dark Mode Professional Theme */
+    :root {
+        --bg-primary: #121622;
+        --bg-secondary: #1C2331;
+        --text-primary: #E0E6ED;
+        --accent-color: #3498db;
+        --accent-hover: #2980b9;
     }
-    .sidebar .sidebar-content {
-        background-color: #1A1E2C;
+
+    /* Global Resets */
+    .stApp {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: 'Inter', 'system-ui', sans-serif;
     }
-    .stTextInput textarea {
-        color: #ffffff !important;
-        background-color: #222736 !important;
-        border-radius: 8px !important;
-        border: 1px solid #3d4254 !important;
+
+    /* Sidebar Styling */
+    .css-1aumxhk {
+        background-color: var(--bg-secondary);
+        border-right: 1px solid #2C3E50;
+        padding: 20px;
     }
-    
-    /* Enhanced select box styling */
-    .stSelectbox div[data-baseweb="select"] {
-        color: white !important;
-        background-color: #222736 !important;
-        border-radius: 8px !important;
-        border: 1px solid #3d4254 !important;
+
+    /* Title Styling */
+    .stTitle {
+        color: var(--text-primary);
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: -1px;
     }
-    
-    .stSelectbox svg {
-        fill: white !important;
+
+    /* Chat Input */
+    .stTextInput > div > div > input {
+        background-color: var(--bg-secondary);
+        border: 2px solid var(--accent-color);
+        color: var(--text-primary);
+        border-radius: 8px;
+        padding: 12px;
+        transition: all 0.3s ease;
     }
-    
-    .stSelectbox option {
-        background-color: #222736 !important;
-        color: white !important;
+
+    .stTextInput > div > div > input:focus {
+        outline: none;
+        border-color: var(--accent-hover);
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
     }
-    
-    /* Enhanced dropdown menu items */
-    div[role="listbox"] div {
-        background-color: #222736 !important;
-        color: white !important;
-    }
-    
-    /* Card styling for sidebar sections */
-    .sidebar-card {
-        background-color: #222736;
-        border-radius: 10px;
+
+    /* Chat Messages */
+    .stChatMessage {
+        background-color: var(--bg-secondary);
+        border-radius: 12px;
         padding: 15px;
         margin-bottom: 15px;
-        border: 1px solid #3d4254;
+        position: relative;
     }
-    
-    /* Header styling */
-    h1, h2, h3 {
-        color: #7C3AED !important;
-        font-weight: 600 !important;
+
+    .stChatMessage[data-role="ai"] {
+        border-left: 4px solid var(--accent-color);
     }
-    
-    /* Chat message styling */
-    .stChatMessage {
-        background-color: #1E2130 !important;
-        border-radius: 10px !important;
-        padding: 10px !important;
-        margin-bottom: 10px !important;
-        border: 1px solid #3d4254 !important;
+
+    .stChatMessage[data-role="user"] {
+        border-left: 4px solid #2ECC71;
     }
-    
-    /* Button styling */
-    .stButton button {
-        border-radius: 8px !important;
-        background-color: #7C3AED !important;
-        color: white !important;
-        border: none !important;
+
+    /* Buttons and Selects */
+    .stButton > button {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 15px;
+        transition: all 0.3s ease;
     }
-    
-    /* Feature badge */
-    .feature-badge {
-        display: inline-block;
-        background-color: rgba(124, 58, 237, 0.2);
-        color: #7C3AED;
-        padding: 5px 10px;
-        border-radius: 5px;
-        margin: 5px 0;
-        font-size: 14px;
+
+    .stButton > button:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-2px);
+    }
+
+    .stSelectbox > div > div > select {
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        border: 2px solid var(--accent-color);
+        border-radius: 6px;
+    }
+
+    /* Capabilities List */
+    .stMarkdown ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .stMarkdown ul li {
+        background-color: var(--bg-primary);
+        margin: 8px 0;
+        padding: 10px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .stMarkdown ul li:hover {
+        background-color: var(--bg-secondary);
     }
 </style>
 """, unsafe_allow_html=True)
-st.title("⚡ DeepSeek-Code-helper")
-st.caption("🚀 Your AI Pair Programmer with Debugging Superpowers")
+
+st.title("DeepSeek - Code Helper")
+st.caption("Your AI Pair Programmer with Debugging Superpowers")
 
 # Sidebar configuration
 with st.sidebar:
     st.header("Configuration")
     selected_model = st.selectbox(
         "Choose Model",
-        ["deepseek-r1:1.5b", "deepseek-r1:8b"],
+        ["deepseek-r1:1.5b", "deepseek-r1:3b"],
         index=0
     )
     st.divider()
-    st.markdown("Model Capabilities")
+    st.markdown("### Model Capabilities")
     st.markdown("""
-    <div class='feature-badge'>⚡ Python Expert</div><br>
-    <div class='feature-badge'>🔍 Debugging Assistant</div><br>
-    <div class='feature-badge'>📊 Code Documentation</div><br>
-    <div class='feature-badge'>🏗️ Solution Design</div>
-    """, unsafe_allow_html=True)
+    - Python Expert
+    - Debugging Assistant
+    - Code Documentation
+    - Solution Design
+    """)
     st.divider()
     st.markdown(
-        "Built With 💜 by shubh", unsafe_allow_html=True)
+        "Built with love by shubh <3")
 
 
 # initiate the chat engine
@@ -136,7 +162,7 @@ system_prompt = SystemMessagePromptTemplate.from_template(
 # Session state management
 if "message_log" not in st.session_state:
     st.session_state.message_log = [
-        {"role": "ai", "content": "Hi! I'm DeepSeek. How can I help you code today? ⚡"}]
+        {"role": "ai", "content": "Hi! I'm DeepSeek. How can I help you code today? 💻"}]
 
 # Chat container
 chat_container = st.container()
@@ -148,7 +174,7 @@ with chat_container:
             st.markdown(message["content"])
 
 # Chat input and processing
-user_query = st.chat_input("What code challenge can I help with?")
+user_query = st.chat_input("Type your coding question here...")
 
 
 def generate_ai_response(prompt_chain):
@@ -174,7 +200,7 @@ if user_query:
         {"role": "user", "content": user_query})
 
     # Generate AI response
-    with st.spinner("⚡ Processing..."):
+    with st.spinner("🧠 Processing..."):
         prompt_chain = build_prompt_chain()
         ai_response = generate_ai_response(prompt_chain)
 
